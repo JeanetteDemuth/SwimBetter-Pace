@@ -36,6 +36,17 @@ input:focus{border-color:#38bdf8;box-shadow:0 0 0 4px rgba(56,189,248,.14)}
 table{width:100%;border-collapse:collapse;background:white;border-radius:14px;overflow:hidden}
 th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{background:#e0f2fe;color:#075985}
+.zone-list{display:grid;gap:12px;margin-top:16px}
+.zone-card{border-radius:18px;padding:16px 17px;color:#fff;box-shadow:0 10px 24px rgba(8,47,73,.10)}
+.zone-card h3{margin:0 0 6px;font-size:20px;letter-spacing:-.015em}
+.zone-card p{margin:4px 0;line-height:1.45}
+.zone-card .zone-pace{font-weight:900;font-size:18px;margin-bottom:8px}
+.zone-card .zone-label{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:.82}
+.zone5{background:linear-gradient(135deg,#c92a2a,#9f1d1d)}
+.zone4{background:linear-gradient(135deg,#f08c00,#d96b00)}
+.zone3{background:linear-gradient(135deg,#2f9e44,#237a35)}
+.zone2{background:linear-gradient(135deg,#1c7ed6,#1766ad)}
+.zone1{background:linear-gradient(135deg,#8b98a5,#6f7b87)}
 
 details.info{margin:10px 0 4px;border:1px solid var(--line);border-radius:16px;background:#f8fdff;overflow:hidden}
 details.info summary{cursor:pointer;list-style:none;padding:13px 15px;font-weight:850;color:var(--navy);display:flex;align-items:center;gap:8px}
@@ -61,11 +72,11 @@ details.info summary:before{content:"i";width:22px;height:22px;border-radius:50%
 <div class="card"><h2>Splits</h2><label>Tempo pr. 100 m</label><input id="splitPace" type="text" placeholder="Fx 1:50"><button class="primary" onclick="splits()">Beregn splits</button><div id="splitOut" class="grid"></div></div>
 <div class="card"><h2>Open Water splits</h2><label>Tempo pr. 100 m</label><input id="openWaterPace" type="text" placeholder="Fx 1:50"><button class="primary" onclick="calculateOpenWaterOriginal()">Beregn Open Water</button><div id="openWaterResult" class="grid"></div></div>
 <div class="card"><h2>Issvømning splits</h2><label>Tempo pr. 100 m</label><input id="icePace" type="text" placeholder="Fx 1:20"><button class="primary" onclick="calculateIceOriginal()">Beregn issvømning</button><div id="iceResult" class="grid"></div></div>
-<div class="card"><h2>Pace &amp; zoner</h2>
-<details class="info"><summary>Sådan læses zonerne</summary><div class="info-body">Zonerne beskriver, hvordan tempoet opleves i vandet – med fokus på vejrtrækning, teknik, rytme og evnen til at fastholde et effektivt vandgreb.</div></details>
+<div class="card"><h2>Træningszoner</h2>
+<details class="info"><summary>Sådan læses zonerne</summary><div class="info-body"><p>Zonerne følger Garmins genkendelige opbygning med Zone 5 øverst og Zone 1 nederst. De beskriver svømmeintensitet med fokus på vejrtrækning, teknik, rytme og evnen til at fastholde et effektivt vandgreb.</p><p>Tempoet beregnes ud fra det pace, du indtaster. Har du en CSS, kan du bruge den som reference.</p></div></details>
 <label>Tempo pr. 100 m</label><input id="zonePace" type="text" placeholder="Fx 1:50"><button class="primary" onclick="zones()">Vis zoner</button><div id="zoneOut" class="tablewrap"></div></div>
 <div class="card"><h2>CSS</h2>
-<details class="info"><summary>Hvad er CSS?</summary><div class="info-body"><p><strong>CSS betyder Critical Swim Speed</strong> og er et estimat af det hurtigste tempo, du kan holde over længere, krævende serier uden hurtigt at miste kontrollen.</p><p>CSS kan bruges til at planlægge tempotræning, styre intervaller, fastlægge træningszoner og følge din udvikling over tid.</p><p>Beregningen her tager udgangspunkt i en 400 m- og en 200 m-test.</p></div></details>
+<details class="info"><summary>Hvad er CSS?</summary><div class="info-body"><p><strong>CSS betyder Critical Swim Speed</strong> og er et estimat af dit aerobe tærskeltempo – det hurtigste tempo, du teoretisk kan holde kontinuerligt uden at blive udmattet.</p><p>CSS kan bruges til at planlægge tempotræning, styre intervaller, fastlægge træningszoner og følge din udvikling over tid.</p><p>Beregningen her tager udgangspunkt i en 400 m- og en 200 m-test.</p></div></details>
 <label>400 m tid</label><input id="css400" type="text" placeholder="Fx 7:20"><label>200 m tid</label><input id="css200" type="text" placeholder="Fx 3:25"><button class="primary" onclick="cssCalc()">Beregn CSS</button><div id="cssOut" class="note">CSS vises her</div></div>
 <div class="card"><h2>SWOLF</h2>
 <details class="info"><summary>Hvad er SWOLF?</summary><div class="info-body"><p><strong>SWOLF er et mål for svømmeøkonomi.</strong> Tallet beregnes som tiden på én bane i sekunder plus antal armtag på samme bane.</p><p>Et lavere tal kan være tegn på bedre effektivitet, men resultatet bør kun sammenlignes med dine egne målinger ved samme banelængde og under tilsvarende forhold.</p></div></details>
@@ -142,14 +153,15 @@ function zones(){
   var p=parseTimeToSecondsStable(document.getElementById('zonePace').value), out=document.getElementById('zoneOut');
   if(!p||p<=0){out.innerHTML='<div class="note">Indtast tempo først</div>';return}
   var z=[
-    ['Z1 – Restitution',1.22,1.35,'Meget roligt tempo. Vejrtrækningen er rolig og kontrolleret, og du har fuldt overskud til balance og teknik.','Restitution og teknik'],
-    ['Z2 – Udholdenhed',1.08,1.20,'Jævnt og komfortabelt tempo. Vejrtrækningen er let forhøjet, men kontrolleret, og rytmen kan fastholdes over længere tid.','Aerob udholdenhed'],
-    ['Z3 – Tærskel',.98,1.03,'Du svømmer tæt på dit maksimale vedvarende tempo, ofte omkring CSS. Vejrtrækningen er tydeligt udfordret, men stadig kontrolleret, og du skal fokusere på at bevare et effektivt vandgreb, en stabil rytme og god teknik gennem hele serien.','Tærskel og CSS-træning'],
-    ['Z4 – VO₂max',.92,.97,'Meget høj intensitet over kortere intervaller. Vejrtrækningen er markant udfordret, og det kræver stor koncentration at holde vandgreb, rytme og teknik.','VO₂max og høj aerob belastning'],
-    ['Z5 – Race pace',.90,.95,'Meget hårdt tempo. Vejrtrækningen er kraftigt presset, og du arbejder målrettet på at holde konkurrencefart, kadence og teknik.','Konkurrencefart'],
-    ['Z6 – Sprint',.78,.89,'Maksimal og eksplosiv indsats over korte intervaller. Vejrtrækningen er presset til det yderste, og fokus er på fart og kraftfuldt vandgreb.','Sprint']
+    {cls:'zone5',name:'Zone 5 – Maksimum',from:.78,to:.89,intensity:'Maksimal intensitet',feel:'Du svømmer med maksimal indsats. Vejrtrækning og muskler er presset til det yderste, og tempoet kan kun holdes kortvarigt.',purpose:'Udvikler maksimal fart, eksplosivitet og evnen til at svømme hurtigt under høj belastning.'},
+    {cls:'zone4',name:'Zone 4 – Tærskel / CSS',from:.90,to:1.00,intensity:'Høj, kontrolleret intensitet',feel:'Tempoet er hårdt, men kontrolleret. Vejrtrækningen er tydeligt udfordret, og du skal arbejde aktivt for at bevare rytme, vandgreb og teknik.',purpose:'Forbedrer evnen til at holde et højt tempo over længere tid. Har du beregnet din CSS, vil den typisk ligge i eller tæt på denne zone.'},
+    {cls:'zone3',name:'Zone 3 – Aerob',from:1.01,to:1.10,intensity:'Moderat til høj intensitet',feel:'Du svømmer stabilt med tydeligt øget vejrtrækning, men har fortsat kontrol over teknik, rytme og vandgreb.',purpose:'Udvikler aerob kapacitet og udholdenhed og gør dig bedre til at holde et jævnt tempo over længere tid.'},
+    {cls:'zone2',name:'Zone 2 – Let',from:1.11,to:1.22,intensity:'Lav til moderat intensitet',feel:'Tempoet er roligt og afslappet. Vejrtrækningen er let forhøjet, og du har overskud til at arbejde med balance, teknik og svømmeøkonomi.',purpose:'Opbygger den aerobe base og gør det muligt at samle træningsvolumen med god kvalitet.'},
+    {cls:'zone1',name:'Zone 1 – Restitution',from:1.23,to:1.35,intensity:'Meget lav intensitet',feel:'Svømningen føles let og ubesværet. Vejrtrækningen er rolig, og kroppen arbejder med minimal belastning.',purpose:'Fremmer restitution og hjælper dig med at bevare en afslappet, naturlig bevægelse i vandet.'}
   ];
-  out.innerHTML='<table><tr><th>Zone</th><th>Tempo</th><th>Sådan føles det i vandet</th><th>Formål</th></tr>'+z.map(function(x){return '<tr><td><b>'+x[0]+'</b></td><td>'+formatTimeStable(p*x[1])+'–'+formatTimeStable(p*x[2])+'</td><td>'+x[3]+'</td><td>'+x[4]+'</td></tr>'}).join('')+'</table>';
+  out.innerHTML='<div class="zone-list">'+z.map(function(x){
+    return '<article class="zone-card '+x.cls+'"><div class="zone-label">'+x.intensity+'</div><h3>'+x.name+'</h3><div class="zone-pace">'+formatTimeStable(p*x.from)+'–'+formatTimeStable(p*x.to)+' pr. 100 m</div><p><strong>Sådan føles zonen:</strong> '+x.feel+'</p><p><strong>Formål:</strong> '+x.purpose+'</p></article>';
+  }).join('')+'</div>';
 }
 function attachPaceListeners(){
   [['distance1','input',calculatePaceOriginal],['time1','input',calculatePaceOriginal],['distance2','input',calculateTotalTimeOriginal],['pace2','input',calculateTotalTimeOriginal],['time3','input',calculateDistanceOriginal],['pace3','input',calculateDistanceOriginal],['openWaterPace','input',calculateOpenWaterOriginal],['icePace','input',calculateIceOriginal]].forEach(function(x){var el=document.getElementById(x[0]); if(el) el.addEventListener(x[1],x[2]);});
