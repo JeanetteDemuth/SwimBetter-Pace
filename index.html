@@ -37,11 +37,17 @@ table{width:100%;border-collapse:collapse;background:white;border-radius:14px;ov
 th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{background:#e0f2fe;color:#075985}
 .zone-list{display:grid;gap:12px;margin-top:16px}
-.zone-card{border-radius:18px;padding:16px 17px;color:#fff;box-shadow:0 10px 24px rgba(8,47,73,.10)}
+.zone-card{border-radius:18px;color:#fff;box-shadow:0 10px 24px rgba(8,47,73,.10);overflow:hidden}
+.zone-card summary{list-style:none;cursor:pointer;padding:16px 46px 16px 17px;position:relative}
+.zone-card summary::-webkit-details-marker{display:none}
+.zone-card summary::after{content:'⌄';position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:900;transition:transform .2s ease}
+.zone-card[open] summary::after{transform:translateY(-50%) rotate(180deg)}
 .zone-card h3{margin:0 0 6px;font-size:20px;letter-spacing:-.015em}
 .zone-card p{margin:4px 0;line-height:1.45}
-.zone-card .zone-pace{font-weight:900;font-size:18px;margin-bottom:8px}
+.zone-card .zone-pace{font-weight:900;font-size:18px}
 .zone-card .zone-label{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:.82}
+.zone-details{padding:0 17px 16px;border-top:1px solid rgba(255,255,255,.24)}
+.zone-details p:first-child{margin-top:13px}
 .zone5{background:linear-gradient(135deg,#c92a2a,#9f1d1d)}
 .zone4{background:linear-gradient(135deg,#f08c00,#d96b00)}
 .zone3{background:linear-gradient(135deg,#2f9e44,#237a35)}
@@ -160,7 +166,7 @@ function zones(){
     {cls:'zone1',name:'Zone 1 – Restitution',from:1.23,to:1.35,intensity:'Meget lav intensitet',feel:'Svømningen føles let og ubesværet. Vejrtrækningen er rolig, og kroppen arbejder med minimal belastning.',purpose:'Fremmer restitution og hjælper dig med at bevare en afslappet, naturlig bevægelse i vandet.'}
   ];
   out.innerHTML='<div class="zone-list">'+z.map(function(x){
-    return '<article class="zone-card '+x.cls+'"><div class="zone-label">'+x.intensity+'</div><h3>'+x.name+'</h3><div class="zone-pace">'+formatTimeStable(p*x.from)+'–'+formatTimeStable(p*x.to)+' pr. 100 m</div><p><strong>Sådan føles zonen:</strong> '+x.feel+'</p><p><strong>Formål:</strong> '+x.purpose+'</p></article>';
+    return '<details class="zone-card '+x.cls+'"><summary><div class="zone-label">'+x.intensity+'</div><h3>'+x.name+'</h3><div class="zone-pace">'+formatTimeStable(p*x.from)+'–'+formatTimeStable(p*x.to)+' pr. 100 m</div></summary><div class="zone-details"><p><strong>Sådan føles zonen:</strong> '+x.feel+'</p><p><strong>Formål:</strong> '+x.purpose+'</p></div></details>';
   }).join('')+'</div>';
 }
 function attachPaceListeners(){
